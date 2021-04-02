@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +22,7 @@ namespace Sigo.Standard.Api.Data.Repositories
 
         public async Task<IEnumerable<Domain.Standard>> GetStandardsAsync()
         {
-            IQueryable<Domain.Standard> query = _context.Set<Domain.Standard>();
+            var query = _context.Set<Domain.Standard>().AsNoTracking();
 
             return await query.ToListAsync();
         }
@@ -36,6 +35,12 @@ namespace Sigo.Standard.Api.Data.Repositories
         public async Task AddAsync(Domain.Standard standard)
         {
             await _context.Standards.AddAsync(standard);
+        }
+
+        public Task DeleteAsync(Domain.Standard standard)
+        {
+            _context.Remove(standard);
+            return Task.CompletedTask;
         }
     }
 }

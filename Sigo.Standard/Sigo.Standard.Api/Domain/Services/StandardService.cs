@@ -13,7 +13,7 @@ namespace Sigo.Standard.Api.Domain.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Standard> Create(ICreateStandardRequest request)
+        public async Task<Standard> CreateAsync(ICreateStandardRequest request)
         {
             var standard = Standard.Create(request);
             await _unitOfWork.StandardRepository.AddAsync(standard);
@@ -21,16 +21,23 @@ namespace Sigo.Standard.Api.Domain.Services
             return standard;
         }
 
-        public async Task<Standard> Inactive(string externalId)
+        public async Task<Standard> UpdateAsync(IUpdateStandard request)
         {
-            var standard =  await _unitOfWork.StandardRepository.GetByExternalIdAsync(externalId);
+            var standard = await _unitOfWork.StandardRepository.GetByExternalIdAsync(request.Id);
 
-            if (standard != null)
-            {
-                standard.Inactive();
-            }
+            if (standard == null) return null;
 
+            standard.Update(request);
             return standard;
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            var standard = await _unitOfWork.StandardRepository.GetByExternalIdAsync(id);
+            
+            if (standard == null) return;
+
+            await _unitOfWork.StandardRepository.DeleteAsync(standard);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace Sigo.Standard.Api.Domain.Services
 {
     public interface IStandardService
     {
-        Task<Standard> Create(ICreateStandardRequest request);
+        Task<Standard> CreateAsync(ICreateStandardRequest request);
+        Task<Standard> UpdateAsync(IUpdateStandard request);
+        Task DeleteAsync(string id);
     }
 }

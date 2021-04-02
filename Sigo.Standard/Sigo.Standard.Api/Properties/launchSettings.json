@@ -1,14 +1,11 @@
 ﻿{
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;port=3306;userid=root;Password=admin;database=SigoStandard;sslmode=none;persistsecurityinfo=True;"
-  },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:5004",
-      "sslPort": 5004
+      "applicationUrl": "https://localhost:5103",
+      "sslPort": 5103
     }
   },
   "profiles": {
@@ -23,7 +20,7 @@
     "Sigo.Standard": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5004",
+      "applicationUrl": "https://localhost:5103",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

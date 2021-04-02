@@ -23,8 +23,8 @@ namespace Sigo.Standard.Api.Domain
             Url = request.Url;
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.Now;
-            ExternalId = Guid.NewGuid().ToString();
-            Status = StandardStatusEnum.Active;
+            ExternalId = Seedwork.Code.Create("stand_");
+            Status = "active";
             Type = request.Type;
             Owner = request.Owner;
             Code = request.Code;
@@ -35,9 +35,13 @@ namespace Sigo.Standard.Api.Domain
             return new Standard(request);
         }
 
-        public void Inactive()
+        public void Update(IUpdateStandard request)
         {
-            Status = StandardStatusEnum.Inactive;
+            Description = request.Description;
+            Code = request.Code;
+            Owner = request.Owner;
+            Type = request.Type;
+            Url = request.Url ?? Url;
             UpdatedAt = DateTime.Now;
         }
     }

@@ -21,8 +21,7 @@ namespace Sigo.Standard.Api
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,23 +34,29 @@ namespace Sigo.Standard.Api
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
-                {
-                    options.Authority = "https://localhost:5005";
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateAudience = false
-                    };
-                });
-              
-            services.AddAuthorization();
+            // services.AddAuthentication("Bearer")
+            //     .AddJwtBearer("Bearer", options =>
+            //     {
+            //         options.Authority = "https://localhost:5101";
+            //         options.TokenValidationParameters = new TokenValidationParameters
+            //         {
+            //             ValidateAudience = false
+            //         };
+            //     });
+            //
+            // services.AddAuthorization();
 
             services.AddScoped<IStandardRepository, StandardRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IStandardAppService, StandardAppService>();
             services.AddScoped<IStandardService, StandardService>();
-           
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientIdPolicy",
+                    policy => policy.RequireClaim("client_id", "Client", "movies_mvc_client"
+                    ));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,19 +66,16 @@ namespace Sigo.Standard.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthentication();
-            app.UseAuthorization();
-            
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-            
+            // app.UseAuthentication();
+            // app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
             context.Database.Migrate();
         }
     }
