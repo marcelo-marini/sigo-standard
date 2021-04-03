@@ -6,8 +6,7 @@ using Sigo.Standard.Api.Models.Request;
 
 namespace Sigo.Standard.Api.Controllers
 {
-    // [Authorize]
-    [ApiController]
+    [Authorize("ClientIdPolicy")]
     [Route("[controller]")]
     public class StandardsController : ControllerBase
     {

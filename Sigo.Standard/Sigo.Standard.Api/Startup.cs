@@ -21,6 +21,7 @@ namespace Sigo.Standard.Api
         {
             Configuration = configuration;
         }
+
         private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -34,17 +35,17 @@ namespace Sigo.Standard.Api
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            // services.AddAuthentication("Bearer")
-            //     .AddJwtBearer("Bearer", options =>
-            //     {
-            //         options.Authority = "https://localhost:5101";
-            //         options.TokenValidationParameters = new TokenValidationParameters
-            //         {
-            //             ValidateAudience = false
-            //         };
-            //     });
-            //
-            // services.AddAuthorization();
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = Configuration.GetSection("BaseUrls").GetValue<string>("AuthApi");
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
+
+            services.AddAuthorization();
 
             services.AddScoped<IStandardRepository, StandardRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -54,8 +55,7 @@ namespace Sigo.Standard.Api
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ClientIdPolicy",
-                    policy => policy.RequireClaim("client_id", "Client", "movies_mvc_client"
-                    ));
+                    policy => policy.RequireClaim("client_id", "standard-api-client", "sigo_webapp_client"));
             });
         }
 
@@ -71,8 +71,8 @@ namespace Sigo.Standard.Api
 
             app.UseRouting();
 
-            // app.UseAuthentication();
-            // app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
