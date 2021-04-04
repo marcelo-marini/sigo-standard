@@ -28,6 +28,23 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    - task: file-creator@6
+      inputs:
+        filepath: 'docker-compose.yml'
+        filecontent: |
+          --- 
+          services: 
+            api: 
+              environment: 
+                - CONNECTIONSTRINGS__DEFAULTCONNECTION=$(Database_Connection_String)
+                - BASEURLS__AUTHAPI=$(AuthApi_Base_Url)
+              image: "$(Docker_ImageName_Api):$(Docker_ImageVersion_Api)"
+              labels: 
+                service_name: $(Docker_ServiceName_Api)
+              mem_limit: $(Docker_MemoryLimit)
+              memswap_limit: $(Docker_MemorySwapLimit)
+          version: "2"
+        fileoverwrite: true
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
