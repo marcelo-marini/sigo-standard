@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sigo.Standard.Api.Application;
@@ -7,7 +8,7 @@ using Sigo.Standard.Api.Models.Request;
 namespace Sigo.Standard.Api.Controllers
 {
     [Authorize("ClientIdPolicy")]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class StandardsController : ControllerBase
     {
         private readonly IStandardAppService _appService;
@@ -21,6 +22,12 @@ namespace Sigo.Standard.Api.Controllers
         public async Task<IActionResult> GetStandardsAsync()
         {
             var response = await _appService.GetAllAsync();
+
+            if (!response.Any())
+            {
+                return NoContent();
+            }
+
             return Ok(response);
         }
 
@@ -48,7 +55,7 @@ namespace Sigo.Standard.Api.Controllers
             return Ok(response);
         }
 
-       [Route("{id}"), HttpDelete]
+        [Route("{id}"), HttpDelete]
         public async Task<IActionResult> DeleteAsync([FromRoute] string id)
         {
             await _appService.DeleteAsync(id);
