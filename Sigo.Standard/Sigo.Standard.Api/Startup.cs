@@ -75,8 +75,6 @@ namespace Sigo.Standard.Api
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-
-            context.Database.Migrate();
         }
     }
 }
