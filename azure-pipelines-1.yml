@@ -1,0 +1,44 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+- task: file-creator@6
+  inputs:
+    filepath: 'docker-compose.yml'
+    filecontent: |
+      version: "2"
+      services:
+        api:
+          labels:
+            service_name: $(Docker_ServiceName_Api)
+          mem_limit: $(Docker_MemoryLimit)
+          memswap_limit: $(Docker_MemorySwapLimit)
+          image: $(Docker_ImageName_Api):$(Docker_ImageVersion_Api)
+          environment:
+            - CONNECTIONSTRINGS__DEFAULTCONNECTION=$(Database_Connection_String)
+            - BASEURLS__AUTHAPI=$(AuthApi_Base_Url)
+    fileoverwrite: true
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Sigo Puc Container Registry'
+    repository: 'sigo-standard'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.BuildId)
+      latest
