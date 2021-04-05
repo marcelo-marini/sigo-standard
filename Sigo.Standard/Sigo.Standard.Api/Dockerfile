@@ -1,6 +1,9 @@
 ﻿#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+ARG apiProtocol=http
+ARG apiPort=80
+
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
@@ -19,5 +22,10 @@ STOPSIGNAL SIGINT
 
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Expose port for the Web API traffic
+ENV ASPNETCORE_URLS ${apiProtocol}://+:${apiPort}
 ENV ASPNETCORE_ENVIRONMENT=Production
+EXPOSE ${apiPort}
+
 ENTRYPOINT ["dotnet", "Sigo.Standard.Api.dll"]
