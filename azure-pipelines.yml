@@ -1,0 +1,56 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'ce6720b3-51d5-4af9-817e-6ad9986ba219'
+  imageRepository: 'marcelomarinisigostandard'
+  containerRegistry: 'sigopuc.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Sigo.Standard/Sigo.Standard.Api/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: file-creator@6
+      inputs:
+        filepath: 'docker-compose.yml'
+        filecontent: |
+          --- 
+          services: 
+            api: 
+              environment: 
+                - CONNECTIONSTRINGS__DEFAULTCONNECTION=$(Database_Connection_String)
+                - BASEURLS__AUTHAPI=$(AuthApi_Base_Url)
+              image: "$(Docker_ImageName_Api):$(Docker_ImageVersion_Api)"
+              labels: 
+                service_name: $(Docker_ServiceName_Api)
+              mem_limit: $(Docker_MemoryLimit)
+              memswap_limit: $(Docker_MemorySwapLimit)
+          version: "2"
+        fileoverwrite: true
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
