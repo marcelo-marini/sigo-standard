@@ -38,6 +38,7 @@ namespace Sigo.Standard.Api
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
+                    options.RequireHttpsMetadata = false;
                     options.Authority = Configuration.GetSection("BaseUrls").GetValue<string>("AuthApi");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -65,9 +66,8 @@ namespace Sigo.Standard.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseHttpsRedirection();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
