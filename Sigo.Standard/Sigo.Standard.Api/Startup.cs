@@ -38,7 +38,6 @@ namespace Sigo.Standard.Api
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.RequireHttpsMetadata = false;
                     options.Authority = Configuration.GetSection("BaseUrls").GetValue<string>("AuthApi");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
